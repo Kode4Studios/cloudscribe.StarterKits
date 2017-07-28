@@ -1,25 +1,22 @@
-﻿@using cloudscribe.Core.Models
-@using cloudscribe.Web.Navigation
-@addTagHelper "*, cloudscribe.Web.Pagination"
+﻿@using cloudscribe.Web.Navigation
+@using cloudscribe.Core.Models
 @inject SiteContext Tenant
 <!DOCTYPE html>
 <html>
 <head>
     <meta charset="utf-8" />
+    <title>@ViewData["Title"] - @(Tenant?.SiteName ?? "Sample")</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     @RenderSection("Meta", required: false)
-    <title>@ViewData["Title"] - example.WebApp</title>
-
-    <environment names="Development">
+	<environment names="Development">
         <link rel="stylesheet" href="~/cssmin/themes/default/bootstrap.css" />
-        <link rel="stylesheet" href="~/css/site.css" />
+        <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     </environment>
     <environment names="Staging,Production">
-        <link rel="stylesheet" href="https://ajax.aspnetcdn.com/ajax/bootstrap/3.3.6/css/bootstrap.min.css"
-              asp-fallback-href="~/cssmin/themes/default/bootstrap.min.css"
-              asp-fallback-test-class="sr-only" asp-fallback-test-property="position" asp-fallback-test-value="absolute" />
+        <link rel="stylesheet" href="~/cssmin/themes/default/bootstrap.min.css"  />
         <link rel="stylesheet" href="~/css/site.min.css" asp-append-version="true" />
     </environment>
+	
     @RenderSection("Styles", required: false)
 </head>
 <body>
@@ -35,17 +32,17 @@
                 <a href="~/@(Tenant?.SiteFolderName ?? "")" class="navbar-brand">@(Tenant?.SiteName ?? "Sample")</a>
             </div>
             <div class="navbar-collapse collapse">
-                @await Component.InvokeAsync("Navigation", new { viewName = "BootstrapTopNav", filterName = NamedNavigationFilters.TopNav, startingNodeKey = "" })
+                @await Component.InvokeAsync("Navigation", new { viewName = "BootstrapTopNavWithDropdowns", filterName = NamedNavigationFilters.TopNav, startingNodeKey = "" })
                 @await Html.PartialAsync("_LoginPartial")
             </div>
         </div>
     </div>
+    @RenderSection("Toolbar", required: false)
     <div class="container body-content">
         @await Component.InvokeAsync("Navigation", new { viewName = "BootstrapBreadcrumbs", filterName = NamedNavigationFilters.Breadcrumbs, startingNodeKey = "" })
         @await Html.PartialAsync("AlertsPartial")
         @RenderBody()
-        <hr />
-        <footer class="text-center" role="contentinfo" itemscope itemtype="http://schema.org/Person" itemprop="author">
+        <footer class="container text-center" role="contentinfo" itemscope itemtype="http://schema.org/Person" itemprop="author">
             <small>Copyright &copy; @DateTime.Now.Year - @(Tenant?.SiteName ?? "Sample")</small>
         </footer>
     </div>
@@ -68,5 +65,4 @@
     @RenderSection("Bottom", required: false)
     @RenderSection("scripts", required: false)
 </body>
-
 </html>
