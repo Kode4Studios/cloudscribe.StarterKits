@@ -16,55 +16,55 @@ script:
   - if test "$TRAVIS_OS_NAME" == "linux"; then dotnet restore; fi
   - if test "$TRAVIS_OS_NAME" == "osx"; then dotnet restore --disable-parallel; fi
   - dotnet build -c Release
-  - cd../../cloudscribe-core-ef-mysql/netcore1
+  - cd ../../cloudscribe-core-ef-mysql/netcore1
   - if test "$TRAVIS_OS_NAME" == "linux"; then dotnet restore; fi
   - if test "$TRAVIS_OS_NAME" == "osx"; then dotnet restore --disable-parallel; fi
   - dotnet build -c Release
-  - cd../../cloudscribe-core-ef-pgsql/netcore1
+  - cd ../../cloudscribe-core-ef-pgsql/netcore1
   - if test "$TRAVIS_OS_NAME" == "linux"; then dotnet restore; fi
   - if test "$TRAVIS_OS_NAME" == "osx"; then dotnet restore --disable-parallel; fi
   - dotnet build -c Release
-  - cd../../cloudscribe-core-nodb/netcore1
+  - cd ../../cloudscribe-core-nodb/netcore1
   - if test "$TRAVIS_OS_NAME" == "linux"; then dotnet restore; fi
   - if test "$TRAVIS_OS_NAME" == "osx"; then dotnet restore --disable-parallel; fi
   - dotnet build -c Release
-  - cd../../cloudscribe-idserver-ef/netcore1
+  - cd ../../cloudscribe-idserver-ef/netcore1
   - if test "$TRAVIS_OS_NAME" == "linux"; then dotnet restore; fi
   - if test "$TRAVIS_OS_NAME" == "osx"; then dotnet restore --disable-parallel; fi
   - dotnet build -c Release
-  - cd../../cloudscribe-idserver-ef-mysql/netcore1
+  - cd ../../cloudscribe-idserver-ef-mysql/netcore1
   - if test "$TRAVIS_OS_NAME" == "linux"; then dotnet restore; fi
   - if test "$TRAVIS_OS_NAME" == "osx"; then dotnet restore --disable-parallel; fi
   - dotnet build -c Release
-  - cd../../cloudscribe-idserver-ef-pgsql/netcore1
+  - cd ../../cloudscribe-idserver-ef-pgsql/netcore1
   - if test "$TRAVIS_OS_NAME" == "linux"; then dotnet restore; fi
   - if test "$TRAVIS_OS_NAME" == "osx"; then dotnet restore --disable-parallel; fi
   - dotnet build -c Release
-  - cd../../cloudscribe-idserver-nodb/netcore1
+  - cd ../../cloudscribe-idserver-nodb/netcore1
   - if test "$TRAVIS_OS_NAME" == "linux"; then dotnet restore; fi
   - if test "$TRAVIS_OS_NAME" == "osx"; then dotnet restore --disable-parallel; fi
   - dotnet build -c Release
-  - cd../../SimpleContent-cloudscribecore-ef/netcore1
+  - cd ../../SimpleContent-cloudscribecore-ef/netcore1
   - if test "$TRAVIS_OS_NAME" == "linux"; then dotnet restore; fi
   - if test "$TRAVIS_OS_NAME" == "osx"; then dotnet restore --disable-parallel; fi
   - dotnet build -c Release
-  - cd../../SimpleContent-cloudscribecore-ef-mysql/netcore1
+  - cd ../../SimpleContent-cloudscribecore-ef-mysql/netcore1
   - if test "$TRAVIS_OS_NAME" == "linux"; then dotnet restore; fi
   - if test "$TRAVIS_OS_NAME" == "osx"; then dotnet restore --disable-parallel; fi
   - dotnet build -c Release
-  - cd../../SimpleContent-cloudscribecore-ef-pgsql/netcore1
+  - cd ../../SimpleContent-cloudscribecore-ef-pgsql/netcore1
   - if test "$TRAVIS_OS_NAME" == "linux"; then dotnet restore; fi
   - if test "$TRAVIS_OS_NAME" == "osx"; then dotnet restore --disable-parallel; fi
   - dotnet build -c Release
-  - cd../../SimpleContent-cloudscribecore-nodb/netcore1
+  - cd ../../SimpleContent-cloudscribecore-nodb/netcore1
   - if test "$TRAVIS_OS_NAME" == "linux"; then dotnet restore; fi
   - if test "$TRAVIS_OS_NAME" == "osx"; then dotnet restore --disable-parallel; fi
   - dotnet build -c Release
-  - cd../../SimpleContent-SimpleAuth-nodb/netcore1
+  - cd ../../SimpleContent-SimpleAuth-nodb/netcore1
   - if test "$TRAVIS_OS_NAME" == "linux"; then dotnet restore; fi
   - if test "$TRAVIS_OS_NAME" == "osx"; then dotnet restore --disable-parallel; fi
   - dotnet build -c Release
-  - cd../../SimpleContent-SimpleAuth-nodb-multitenant/netcore1
+  - cd ../../SimpleContent-SimpleAuth-nodb-multitenant/netcore1
   - if test "$TRAVIS_OS_NAME" == "linux"; then dotnet restore; fi
   - if test "$TRAVIS_OS_NAME" == "osx"; then dotnet restore --disable-parallel; fi
   - dotnet build -c Release
