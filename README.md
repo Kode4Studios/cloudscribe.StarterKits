@@ -34,6 +34,8 @@ To get the big picture of what cloudscribe provides for you see the [Introductio
 
 ### Build Status
 
+We are currently working on adding netcoreapp2.0 versions of the StarterKits, but we don't yet have the automated builds working for that so the build status may say it is failing but in fact the solutions all build fine. We will get the automated builds working as soon as we can pending support for .NET Core 2 on AppVeyor and Travis
+
 | Windows  | Linux/Mac |
 | ------------- | ------------- |
 | [![Build status](https://ci.appveyor.com/api/projects/status/jvafvkw4xueq3te4?svg=true)](https://ci.appveyor.com/project/joeaudette/cloudscribe-starterkits)  | [![Build Status](https://travis-ci.org/joeaudette/cloudscribe.StarterKits.svg?branch=master)](https://travis-ci.org/joeaudette/cloudscribe.StarterKits)  |
