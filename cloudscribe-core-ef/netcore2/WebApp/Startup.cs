@@ -1,43 +1,32 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.IO;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using System.Globalization;
 using Microsoft.AspNetCore.Localization;
-using Microsoft.AspNetCore.DataProtection;
+using Microsoft.AspNetCore.Mvc;
 
 namespace WebApp
 {
     public class Startup
     {
-        public Startup(IHostingEnvironment env)
+        public Startup(IConfiguration configuration)
         {
-            var builder = new ConfigurationBuilder()
-                .SetBasePath(env.ContentRootPath)
-                .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
-                .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true, reloadOnChange: true)
-                .AddJsonFile("appsettings.dev.json", optional: true, reloadOnChange: true);
-            
-            builder.AddEnvironmentVariables();
-            Configuration = builder.Build();
-            
-            environment = env;
+          
+            Configuration = configuration;
         }
 
-        public IHostingEnvironment environment { get; set; }
-
-        public IConfigurationRoot Configuration { get; }
-
+        public IConfiguration Configuration { get; }
         public bool SslIsAvailable { get; set; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
@@ -45,7 +34,7 @@ namespace WebApp
         {
             //string pathToCryptoKeys = Path.Combine(environment.ContentRootPath, "dp_keys");
             services.AddDataProtection()
-               // .PersistKeysToFileSystem(new System.IO.DirectoryInfo(pathToCryptoKeys))
+                // .PersistKeysToFileSystem(new System.IO.DirectoryInfo(pathToCryptoKeys))
                 ;
 
             services.Configure<ForwardedHeadersOptions>(options =>
@@ -54,7 +43,7 @@ namespace WebApp
             });
 
             services.AddMemoryCache();
-            
+
             //services.AddSession();
 
             ConfigureAuthPolicy(services);
@@ -66,9 +55,8 @@ namespace WebApp
 
             // only needed if using cloudscribe logging with EF storage
             services.AddCloudscribeLoggingEFStorageMSSQL(connectionString);
-            
             services.AddCloudscribeLogging();
-            
+
             services.AddCloudscribeCore(Configuration);
 
             // optional but recommended if you need localization 
@@ -137,33 +125,36 @@ namespace WebApp
                     options.AddCloudscribeCoreBootstrap3Views();
                     options.AddCloudscribeFileManagerBootstrap3Views();
                     options.AddCloudscribeLoggingBootstrap3Views();
-                    
+
                     options.ViewLocationExpanders.Add(new cloudscribe.Core.Web.Components.SiteViewLocationExpander());
-                })
-                    ;
+                });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        // you can add things to this method signature and they will be injected as long as they were registered during 
-        // ConfigureServices
         public void Configure(
-            IApplicationBuilder app,
+            IApplicationBuilder app, 
             IHostingEnvironment env,
             ILoggerFactory loggerFactory,
             IOptions<cloudscribe.Core.Models.MultiTenantOptions> multiTenantOptionsAccessor,
             IServiceProvider serviceProvider,
-            IOptions<RequestLocalizationOptions> localizationOptionsAccessor,
-            cloudscribe.Logging.Web.ILogRepository logRepo
+            IOptions<RequestLocalizationOptions> localizationOptionsAccessor
             )
         {
-            loggerFactory.AddConsole(Configuration.GetSection("Logging"));
-            loggerFactory.AddDebug();
-            ConfigureLogging(loggerFactory, serviceProvider, logRepo);
+            
+            var scopeFactory = app.ApplicationServices.GetRequiredService<IServiceScopeFactory>();
+            using (var scope = scopeFactory.CreateScope())
+            {
+                var logRepo = scope.ServiceProvider.GetService<cloudscribe.Logging.Web.ILogRepository>();
+                ConfigureLogging(env, loggerFactory, serviceProvider, logRepo);
+            }
+
+            
 
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
                 app.UseBrowserLink();
+                app.UseDatabaseErrorPage();
             }
             else
             {
@@ -172,11 +163,9 @@ namespace WebApp
 
             app.UseForwardedHeaders();
             app.UseStaticFiles();
-            
-            //app.UseSession();
 
             app.UseRequestLocalization(localizationOptionsAccessor.Value);
-            
+
             var multiTenantOptions = multiTenantOptionsAccessor.Value;
 
             app.UseCloudscribeCore(
@@ -191,9 +180,6 @@ namespace WebApp
 
             // this one is only needed if using cloudscribe Logging with EF as the logging storage
             LoggingEFStartup.InitializeDatabaseAsync(app.ApplicationServices).Wait();
-
-            
-
         }
 
         private void UseMvc(IApplicationBuilder app, bool useFolders)
@@ -204,13 +190,13 @@ namespace WebApp
 
                 if (useFolders)
                 {
-					routes.MapRoute(
+                    routes.MapRoute(
                        name: "foldererrorhandler",
                        template: "{sitefolder}/oops/error/{statusCode?}",
                        defaults: new { controller = "Oops", action = "Error" },
                        constraints: new { name = new cloudscribe.Core.Web.Components.SiteFolderRouteConstraint() }
                     );
-					
+
                     routes.MapRoute(
                         name: "folderdefault",
                         template: "{sitefolder}/{controller}/{action}/{id?}",
@@ -266,6 +252,7 @@ namespace WebApp
         }
 
         private void ConfigureLogging(
+            IHostingEnvironment env,
             ILoggerFactory loggerFactory,
             IServiceProvider serviceProvider
             , cloudscribe.Logging.Web.ILogRepository logRepo
@@ -273,7 +260,7 @@ namespace WebApp
         {
             // a customizable filter for logging
             LogLevel minimumLevel;
-            if (environment.IsProduction())
+            if (env.IsProduction())
             {
                 minimumLevel = LogLevel.Warning;
             }
@@ -307,6 +294,5 @@ namespace WebApp
 
             loggerFactory.AddDbLogger(serviceProvider, logFilter, logRepo);
         }
-
     }
 }
