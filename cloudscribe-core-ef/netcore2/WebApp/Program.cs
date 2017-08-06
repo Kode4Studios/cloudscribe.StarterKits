@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using System;
+using System.Collections.Generic;
 
 namespace WebApp
 {
@@ -11,10 +12,14 @@ namespace WebApp
         public static void Main(string[] args)
         {
             var host = BuildWebHost(args);
+            var loggerFactory = host.Services.GetRequiredService<ILoggerFactory>();
+            var env = host.Services.GetRequiredService<IHostingEnvironment>();
 
             using (var scope = host.Services.CreateScope())
             {
                 var services = scope.ServiceProvider;
+                ConfigureLogging(env, loggerFactory, services);
+
                 try
                 {
                     EnsureDataStorageIsReady(services);
@@ -42,6 +47,50 @@ namespace WebApp
 
             // this one is only needed if using cloudscribe Logging with EF as the logging storage
             LoggingEFStartup.InitializeDatabaseAsync(services).Wait();
+        }
+
+        private static void ConfigureLogging(
+            IHostingEnvironment env,
+            ILoggerFactory loggerFactory,
+            IServiceProvider serviceProvider
+            )
+        {
+            LogLevel minimumLevel;
+            if (env.IsProduction())
+            {
+                minimumLevel = LogLevel.Warning;
+            }
+            else
+            {
+                minimumLevel = LogLevel.Information;
+            }
+
+            var logRepo = serviceProvider.GetService<cloudscribe.Logging.Web.ILogRepository>();
+
+            // a customizable filter for logging
+            // add exclusions to remove noise in the logs
+            var excludedLoggers = new List<string>
+            {
+                "Microsoft.AspNetCore.StaticFiles.StaticFileMiddleware",
+                "Microsoft.AspNetCore.Hosting.Internal.WebHost",
+            };
+
+            Func<string, LogLevel, bool> logFilter = (string loggerName, LogLevel logLevel) =>
+            {
+                if (logLevel < minimumLevel)
+                {
+                    return false;
+                }
+
+                if (excludedLoggers.Contains(loggerName))
+                {
+                    return false;
+                }
+
+                return true;
+            };
+
+            loggerFactory.AddDbLogger(serviceProvider, logFilter, logRepo);
         }
 
     }
