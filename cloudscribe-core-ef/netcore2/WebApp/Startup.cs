@@ -175,11 +175,7 @@ namespace WebApp
 
             UseMvc(app, multiTenantOptions.Mode == cloudscribe.Core.Models.MultiTenantMode.FolderName);
             
-            // this ensures the database is created with initial data
-            CoreEFStartup.InitializeDatabaseAsync(app.ApplicationServices).Wait();
-
-            // this one is only needed if using cloudscribe Logging with EF as the logging storage
-            LoggingEFStartup.InitializeDatabaseAsync(app.ApplicationServices).Wait();
+            
         }
 
         private void UseMvc(IApplicationBuilder app, bool useFolders)
