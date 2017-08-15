@@ -217,9 +217,10 @@ namespace WebApp
 
                     routes.MapRoute(
                         name: "folderdefault",
-                        template: "{sitefolder}/{controller}/{action}/{id?}",
-                        defaults: new { controller = "Home", action = "Index" },
-                        constraints: new { name = new cloudscribe.Core.Web.Components.SiteFolderRouteConstraint() }
+                        template: "{sitefolder}/{controller}/{action}/{id?}"
+                        , defaults: null
+                        //,defaults: new { controller = "Home", action = "Index" }
+                        , constraints: new { name = new cloudscribe.Core.Web.Components.SiteFolderRouteConstraint() }
                         );
 
                     routes.AddDefaultPageRouteForSimpleContent(new cloudscribe.Core.Web.Components.SiteFolderRouteConstraint());
